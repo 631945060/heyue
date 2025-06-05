@@ -3,13 +3,14 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts-upgradeable/proxy/utils/Initializable.sol";
 import "@openzeppelin/contracts-upgradeable/proxy/utils/UUPSUpgradeable.sol";
-
-contract BeggingContractUUPS is Initializable, UUPSUpgradeable 
-
+import "@openzeppelin/contracts-upgradeable/access/OwnableUpgradeable.sol";
+contract BeggingContractUUPS is
+    Initializable,
+    UUPSUpgradeable,
+    OwnableUpgradeable
 {
     //记录每个捐赠者的捐赠金额
     mapping(address => uint256) public donations;
-    address public owner;
     event Approval(
         address indexed owner,
         address indexed spender,
@@ -17,7 +18,7 @@ contract BeggingContractUUPS is Initializable, UUPSUpgradeable
     );
 
     function initialize() public initializer {
-        owner = msg.sender;
+        __Ownable_init();
     }
 
     //允许用户向合约发送以太币，并记录捐赠信息。
@@ -27,14 +28,14 @@ contract BeggingContractUUPS is Initializable, UUPSUpgradeable
     }
 
     // 允许合约所有者提取所有资金
-    function withdraw() public {
+    function withdraw() public onlyOwner {
         require(
-            msg.sender == owner,
+            msg.sender == owner(),
             "Only the contract owner can withdraw funds."
         );
         uint256 contractBalance = address(this).balance;
         require(contractBalance > 0, "No funds to withdraw.");
-        payable(owner).transfer(contractBalance);
+        payable(owner()).transfer(contractBalance);
     }
 
     //允许查询某个地址的捐赠金额
@@ -43,8 +44,8 @@ contract BeggingContractUUPS is Initializable, UUPSUpgradeable
     }
     function _authorizeUpgrade(
         address newImplementation
-    ) internal view override {
+    ) internal view override onlyOwner {
         // 只有管理员可以升级合约
-        require(msg.sender == owner, "Only admin can upgrade");
+        require(msg.sender == owner(), "Only admin can upgrade");
     }
 }
