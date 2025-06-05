@@ -20,7 +20,7 @@ contract BeggingContractERC20 is Initializable, OwnableUpgradeable {
     event Donation(address indexed donor, uint256 amount);
 
     function initialize(address _tokenAddress) public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
         token = IERC20(_tokenAddress); // 初始化时设置 ERC-20 代币地址
     }
 

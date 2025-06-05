@@ -18,7 +18,7 @@ contract BeggingContractUUPS is
     );
 
     function initialize() public initializer {
-        __Ownable_init();
+        __Ownable_init(msg.sender);
     }
 
     //允许用户向合约发送以太币，并记录捐赠信息。
