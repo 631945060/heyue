@@ -10,14 +10,17 @@ contract BeggingContractTransparentV2 is Initializable,OwnableUpgradeable {
     //记录每个捐赠者的捐赠金额
     mapping(address => uint256) public donations;
     uint256 public value;
+    
+
+
+    // AggregatorV3Interface public priceFeed; // ETH/USD 预言机接口
+
+    mapping(address => AggregatorV3Interface) public priceFeeds;
     string  public message;// 新增字段
 
     function initialize(address initialOwner) public initializer {
         __Ownable_init(initialOwner);
     }
-    // AggregatorV3Interface public priceFeed; // ETH/USD 预言机接口
-
-    mapping(address => AggregatorV3Interface) public priceFeeds;
     event Approval(
         address indexed owner,
         address indexed spender,

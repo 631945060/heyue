@@ -5,7 +5,7 @@ import "./BeggingContractBeacon.sol";
 
 contract Factory {
     address[] public allImpls;
-
+    
     function createImpl() public {
         BeggingContractBeacon impl = new BeggingContractBeacon();
         allImpls.push(address(impl));
