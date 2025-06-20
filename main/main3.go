@@ -6,6 +6,7 @@ import (
 	"crypto/ecdsa"
 	Begging "ethc/begging"
 	"fmt"
+	"github.com/ethereum/go-ethereum"
 	"log"
 	"math/big"
 
@@ -17,7 +18,7 @@ import (
 
 const (
 	//contractAddr = "0x2FBEdC849dD62b5c8CCb49d65beD44a3FA295c4B"
-	contractAddr = "0x0F1E73191BA526F1120D2ea56b055D1CAE04445d"
+	contractAddr = "0x9496D1EE9747ce59317A39F2fD3419290479139c"
 )
 
 func main() {
@@ -50,7 +51,7 @@ func main() {
 		log.Fatal(err)
 	}
 	opt.Nonce = nil
-	ethAmount := big.NewFloat(0.001)
+	ethAmount := big.NewFloat(0.00001)
 
 	ethToWei := big.NewFloat(1e18)
 	weiAmount := new(big.Int)
@@ -59,21 +60,48 @@ func main() {
 	opt.GasLimit = uint64(300000)
 	opt.GasPrice = nil
 	opt.Value = weiAmount
-	tt, err := storeContract.Donate(opt)
-	if err != nil {
-		log.Fatal(err)
-	}
-	fmt.Printf("Transaction Hash: %s\n", tt.Hash().Hex())
+	//tt, err := storeContract.Donate(opt)
+	//if err != nil {
+	//	log.Fatal(err)
+	//}
+	//fmt.Printf("Transaction Hash: %s\n", tt.Hash().Hex())
 	// 捐赠者地址，你需要替换为实际的捐赠者地址
-	donorAddress := common.HexToAddress("0x0FF404A49B83Ae402fd3F667192A4Acf89d88ba2")
+	donorAddress := common.HexToAddress("0x0109244e392b0613b4048F7C97601bd94a638B16")
 
 	callOpts := &bind.CallOpts{
 		Context: context.Background(),
 		From:    fromAddress,
 	}
-	donation, err := storeContract.GetDonation(callOpts, donorAddress)
+	donation, err := storeContract.GetDonation(callOpts, fromAddress)
 	if err != nil {
 		log.Fatalf("Failed to call GetDonation method: %v", err)
 	}
 	fmt.Printf("Donation amount for donor %s: %s\n", donorAddress.Hex(), donation.String())
+
+	//getDonation(address donor)
+	methodSignature := []byte("getDonation(address)")
+	methodSelector := crypto.Keccak256(methodSignature)[:4] // 函数选择器
+
+	// 构造参数：address 是 20 字节，需右对齐填充到 32 字节
+	var paddedAddress [32]byte
+	copy(paddedAddress[12:], fromAddress.Bytes()) // 地址放在右边 20 字节位置
+
+	// 构造调用数据
+	input := append([]byte{}, methodSelector...)
+	input = append(input, paddedAddress[:]...)
+
+	to := common.HexToAddress(contractAddr)
+	callMsg := ethereum.CallMsg{
+		To:   &to,
+		Data: input,
+	}
+
+	result, err := client.CallContract(context.Background(), callMsg, nil)
+	if err != nil {
+		log.Fatal(err)
+	}
+	var unpacked [32]byte
+	copy(unpacked[:], result)
+	fmt.Println("is value saving in contract equals to origin value:", unpacked)
+
 }

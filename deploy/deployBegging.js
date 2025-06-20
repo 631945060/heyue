@@ -5,7 +5,7 @@ module.exports = async ({ getNamedAccounts, deployments }) => {
     const { save } = deployments;
     const { deployer } = await getNamedAccounts();
     console.log("部署用户地址:", deployer)
-    const BeggingContract = await ethers.getContractFactory('BeggingContractV2');
+    const BeggingContract = await ethers.getContractFactory('BeggingContractV1');
     const beggingContractProxy = await upgrades.deployProxy(BeggingContract, [
         // "0x00000000000000000000000000000000",
         // 1000 * 100,
