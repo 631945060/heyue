@@ -2,7 +2,10 @@ module ethc
 
 go 1.24
 
-require github.com/ethereum/go-ethereum v1.15.11
+require (
+	github.com/ethereum/go-ethereum v1.15.11
+	github.com/gomodule/redigo v1.9.2
+)
 
 require (
 	github.com/Microsoft/go-winio v0.6.2 // indirect

@@ -6,9 +6,10 @@ import (
 	"crypto/ecdsa"
 	Begging "ethc/begging"
 	"fmt"
-	"github.com/ethereum/go-ethereum"
 	"log"
 	"math/big"
+
+	"github.com/ethereum/go-ethereum"
 
 	"github.com/ethereum/go-ethereum/accounts/abi/bind"
 	"github.com/ethereum/go-ethereum/common"
@@ -65,7 +66,13 @@ func main() {
 	//	log.Fatal(err)
 	//}
 	//fmt.Printf("Transaction Hash: %s\n", tt.Hash().Hex())
-	// 捐赠者地址，你需要替换为实际的捐赠者地址
+	opt.From = common.HexToAddress("0x0109244e392b0613b4048F7C97601bd94a638B16")
+	tt, err := storeContract.Withdraw(opt)
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Printf("Transaction Hash: %s\n", tt.Hash().Hex())
+	//// 捐赠者地址，你需要替换为实际的捐赠者地址
 	donorAddress := common.HexToAddress("0x0109244e392b0613b4048F7C97601bd94a638B16")
 
 	callOpts := &bind.CallOpts{
